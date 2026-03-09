@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+/* Custom design tokens — available as bg-*, text-*, border-* utilities */
+@theme {
+  --color-portal: #97ce4c; /* accent green */
+  --color-space: #0b0d17; /* page background */
+  --color-card: #1a1f35; /* card / input background */
+  --color-rim: #2a3050; /* borders, dividers */
+  --color-surface: #111827; /* nav / panel background */
+  --color-night: #0f172a; /* deepest dark: tooltips, episode badges */
+  --color-dead: #e74c3c; /* dead-status red */
+  --color-danger: #2d1b1b; /* error banner background */
+}
+
+body {
+  margin: 0;
+  background-color: theme(--color-space);
+  color: #e2e8f0;
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
+  min-height: 100vh;
+}
+
+* {
+  box-sizing: border-box;
+}
