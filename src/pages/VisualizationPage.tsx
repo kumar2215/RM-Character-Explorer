@@ -2,11 +2,13 @@ import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchAllCharacters } from "../api/characters";
 import OriginBarChart from "../components/visualization/OriginBarChart";
+import OriginCurrentSankey from "../components/visualization/OriginCurrentSankey";
 import CharacterEpisodeNetwork from "../components/visualization/CharacterEpisodeNetwork";
 import CharacterNetworkControls from "../components/visualization/CharacterNetworkControls";
 import type { CharacterNetworkFilters } from "../types";
 import {
   buildCharacterNetworkData,
+  buildOriginCurrentSankeyData,
   deriveCharacterNetworkFilterOptions,
   filterCharactersForNetwork,
 } from "../utils/characterNetwork";
@@ -20,6 +22,14 @@ const DEFAULT_NETWORK_FILTERS: CharacterNetworkFilters = {
 };
 
 const DEFAULT_BAR_FILTERS: CharacterNetworkFilters = {
+  origins: [],
+  species: [],
+  statuses: [],
+  episodeThreshold: 1,
+  nodeLimit: 200,
+};
+
+const DEFAULT_SANKEY_FILTERS: CharacterNetworkFilters = {
   origins: [],
   species: [],
   statuses: [],
@@ -41,6 +51,9 @@ export default function VisualizationPage() {
   );
   const [barFilters, setBarFilters] =
     useState<CharacterNetworkFilters>(DEFAULT_BAR_FILTERS);
+  const [sankeyFilters, setSankeyFilters] = useState<CharacterNetworkFilters>(
+    DEFAULT_SANKEY_FILTERS,
+  );
 
   const {
     data: characters,
@@ -80,12 +93,26 @@ export default function VisualizationPage() {
     }));
   }, [barFilters, characters]);
 
+  const sankeyFilteredCharacters = useMemo(
+    () => filterCharactersForNetwork(characters ?? [], sankeyFilters),
+    [characters, sankeyFilters],
+  );
+
+  const sankeyData = useMemo(
+    () => buildOriginCurrentSankeyData(sankeyFilteredCharacters),
+    [sankeyFilteredCharacters],
+  );
+
   function handleNetworkFilterChange(next: Partial<CharacterNetworkFilters>) {
     setNetworkFilters((current) => ({ ...current, ...next }));
   }
 
   function handleBarFilterChange(next: Partial<CharacterNetworkFilters>) {
     setBarFilters((current) => ({ ...current, ...next }));
+  }
+
+  function handleSankeyFilterChange(next: Partial<CharacterNetworkFilters>) {
+    setSankeyFilters((current) => ({ ...current, ...next }));
   }
 
   return (
@@ -120,6 +147,23 @@ export default function VisualizationPage() {
                 showGraphControls={false}
               />
               <OriginBarChart data={barChartData} />
+            </>
+          )}
+        </div>
+
+        {/* Origin -> Current Sankey */}
+        <div className="bg-surface border border-rim rounded-2xl p-7">
+          {isCharactersLoading ? (
+            <SectionSkeleton className="h-120" />
+          ) : (
+            <>
+              <CharacterNetworkControls
+                filters={sankeyFilters}
+                options={networkOptions}
+                onChange={handleSankeyFilterChange}
+                showGraphControls={false}
+              />
+              <OriginCurrentSankey data={sankeyData} />
             </>
           )}
         </div>

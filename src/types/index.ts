@@ -79,3 +79,22 @@ export interface CharacterNetworkLink {
   sharedEpisodes: number;
   sharedEpisodeIds: number[];
 }
+
+export interface OriginCurrentSankeyNode {
+  name: string;
+  kind: "origin" | "location";
+  count: number;
+}
+
+export interface OriginCurrentSankeyLink {
+  source: number;
+  target: number;
+  value: number;
+  rawValue?: number;
+  percentFromSource?: number;
+}
+
+export interface OriginCurrentSankeyData {
+  nodes: OriginCurrentSankeyNode[];
+  links: OriginCurrentSankeyLink[];
+}

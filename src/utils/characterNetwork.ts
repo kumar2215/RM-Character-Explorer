@@ -4,11 +4,39 @@ import type {
   CharacterNetworkFilters,
   CharacterNetworkLink,
   CharacterNetworkNode,
+  OriginCurrentSankeyData,
+  OriginCurrentSankeyLink,
+  OriginCurrentSankeyNode,
 } from "../types";
+
+const MAX_SANKEY_ORIGINS = 12;
+const MAX_SANKEY_LOCATIONS = 12;
+const OTHER_ORIGINS_LABEL = "Other Origins";
+const OTHER_LOCATIONS_LABEL = "Other Current Locations";
 
 function episodeIdFromUrl(url: string): number | null {
   const match = url.match(/\/(\d+)$/);
   return match ? Number(match[1]) : null;
+}
+
+function normalizeName(name: string | undefined): string {
+  const value = (name ?? "").trim();
+  return value.length > 0 ? value : "Unknown";
+}
+
+function getTopKeysByFrequency(
+  counts: Map<string, number>,
+  limit: number,
+): Set<string> {
+  return new Set(
+    Array.from(counts.entries())
+      .sort((a, b) => {
+        if (b[1] !== a[1]) return b[1] - a[1];
+        return a[0].localeCompare(b[0]);
+      })
+      .slice(0, limit)
+      .map(([name]) => name),
+  );
 }
 
 export function deriveCharacterNetworkFilterOptions(
@@ -125,4 +153,118 @@ export function buildCharacterNetworkData(
   const connectedNodes = nodes.filter((node) => connectedNodeIds.has(node.id));
 
   return { nodes: connectedNodes, links };
+}
+
+export function buildOriginCurrentSankeyData(
+  characters: Character[],
+): OriginCurrentSankeyData {
+  if (characters.length === 0) {
+    return { nodes: [], links: [] };
+  }
+
+  const originCounts = new Map<string, number>();
+  const locationCounts = new Map<string, number>();
+
+  for (const character of characters) {
+    const originName = normalizeName(character.origin.name);
+    const locationName = normalizeName(character.location.name);
+    originCounts.set(originName, (originCounts.get(originName) ?? 0) + 1);
+    locationCounts.set(
+      locationName,
+      (locationCounts.get(locationName) ?? 0) + 1,
+    );
+  }
+
+  const topOrigins = getTopKeysByFrequency(originCounts, MAX_SANKEY_ORIGINS);
+  const topLocations = getTopKeysByFrequency(
+    locationCounts,
+    MAX_SANKEY_LOCATIONS,
+  );
+
+  const flowByOrigin = new Map<string, Map<string, number>>();
+  const originBucketCounts = new Map<string, number>();
+  const locationBucketCounts = new Map<string, number>();
+
+  for (const character of characters) {
+    const originName = normalizeName(character.origin.name);
+    const locationName = normalizeName(character.location.name);
+    const originBucket = topOrigins.has(originName)
+      ? originName
+      : OTHER_ORIGINS_LABEL;
+    const locationBucket = topLocations.has(locationName)
+      ? locationName
+      : OTHER_LOCATIONS_LABEL;
+
+    originBucketCounts.set(
+      originBucket,
+      (originBucketCounts.get(originBucket) ?? 0) + 1,
+    );
+    locationBucketCounts.set(
+      locationBucket,
+      (locationBucketCounts.get(locationBucket) ?? 0) + 1,
+    );
+
+    const row = flowByOrigin.get(originBucket) ?? new Map<string, number>();
+    row.set(locationBucket, (row.get(locationBucket) ?? 0) + 1);
+    flowByOrigin.set(originBucket, row);
+  }
+
+  const orderedOrigins = Array.from(originBucketCounts.entries())
+    .sort((a, b) => {
+      if (b[1] !== a[1]) return b[1] - a[1];
+      return a[0].localeCompare(b[0]);
+    })
+    .map(([name]) => name);
+
+  const orderedLocations = Array.from(locationBucketCounts.entries())
+    .sort((a, b) => {
+      if (b[1] !== a[1]) return b[1] - a[1];
+      return a[0].localeCompare(b[0]);
+    })
+    .map(([name]) => name);
+
+  const nodes: OriginCurrentSankeyNode[] = [];
+  const originIndexByName = new Map<string, number>();
+  const locationIndexByName = new Map<string, number>();
+
+  for (const originName of orderedOrigins) {
+    originIndexByName.set(originName, nodes.length);
+    nodes.push({
+      name: originName,
+      kind: "origin",
+      count: originBucketCounts.get(originName) ?? 0,
+    });
+  }
+
+  for (const locationName of orderedLocations) {
+    locationIndexByName.set(locationName, nodes.length);
+    nodes.push({
+      name: locationName,
+      kind: "location",
+      count: locationBucketCounts.get(locationName) ?? 0,
+    });
+  }
+
+  const links: OriginCurrentSankeyLink[] = [];
+  for (const originName of orderedOrigins) {
+    const row = flowByOrigin.get(originName);
+    if (!row) continue;
+
+    const sourceIndex = originIndexByName.get(originName);
+    if (sourceIndex === undefined) continue;
+
+    const sortedTargets = Array.from(row.entries()).sort((a, b) => {
+      if (b[1] !== a[1]) return b[1] - a[1];
+      return a[0].localeCompare(b[0]);
+    });
+
+    for (const [locationName, count] of sortedTargets) {
+      const targetIndex = locationIndexByName.get(locationName);
+      if (targetIndex === undefined || count <= 0) continue;
+      links.push({ source: sourceIndex, target: targetIndex, value: count });
+    }
+  }
+
+  links.sort((a, b) => b.value - a.value);
+  return { nodes, links };
 }
