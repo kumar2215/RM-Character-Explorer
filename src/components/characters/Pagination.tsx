@@ -17,6 +17,7 @@ export default function Pagination({
   return (
     <div className="flex items-center justify-center gap-4 py-8">
       <button
+        type="button"
         className={btnCls}
         disabled={page <= 1}
         onClick={() => onPageChange(page - 1)}
@@ -30,6 +31,7 @@ export default function Pagination({
       </span>
 
       <button
+        type="button"
         className={btnCls}
         disabled={page >= totalPages}
         onClick={() => onPageChange(page + 1)}

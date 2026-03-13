@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchCharacters } from "../api";
 import type { CharacterFilters } from "../types";
@@ -41,12 +41,28 @@ export default function HomePage() {
     queryFn: () => fetchCharacters(filters),
   });
 
-  function handleFilterChange(partial: Partial<CharacterFilters>) {
-    setFilters((prev) => ({ ...prev, ...partial }));
-  }
+  const handleFilterChange = useCallback(
+    (partial: Partial<CharacterFilters>) => {
+      setFilters((prev) => ({ ...prev, ...partial }));
+    },
+    [],
+  );
+
+  useEffect(() => {
+    if (!data) return;
+
+    if (data.info.pages === 0 && filters.page !== 1) {
+      setFilters((prev) => ({ ...prev, page: 1 }));
+      return;
+    }
+
+    if (data.info.pages > 0 && filters.page > data.info.pages) {
+      setFilters((prev) => ({ ...prev, page: data.info.pages }));
+    }
+  }, [data, filters.page]);
 
   return (
-    <div className="max-w-[1400px] mx-auto px-5 py-6">
+    <div className="max-w-350 mx-auto px-5 py-6">
       <div className="mb-6">
         <h1 className="text-3xl font-bold m-0 text-portal">
           Character Explorer
