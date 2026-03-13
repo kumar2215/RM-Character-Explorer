@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchCharacters } from "../api";
 import type { CharacterFilters } from "../types";
@@ -47,19 +47,6 @@ export default function HomePage() {
     },
     [],
   );
-
-  useEffect(() => {
-    if (!data) return;
-
-    if (data.info.pages === 0 && filters.page !== 1) {
-      setFilters((prev) => ({ ...prev, page: 1 }));
-      return;
-    }
-
-    if (data.info.pages > 0 && filters.page > data.info.pages) {
-      setFilters((prev) => ({ ...prev, page: data.info.pages }));
-    }
-  }, [data, filters.page]);
 
   return (
     <div className="max-w-350 mx-auto px-5 py-6">
