@@ -47,3 +47,35 @@ export interface CharacterFilters {
   gender: string;
   page: number;
 }
+
+export interface CharacterNetworkFilters {
+  origins: string[];
+  species: string[];
+  statuses: Character["status"][];
+  episodeThreshold: number;
+  nodeLimit: number;
+}
+
+export interface CharacterNetworkFilterOptions {
+  origins: string[];
+  species: string[];
+  statuses: Character["status"][];
+}
+
+export interface CharacterNetworkNode {
+  id: number;
+  name: string;
+  image: string;
+  gender: Character["gender"];
+  status: Character["status"];
+  species: string;
+  originName: string;
+  episodeCount: number;
+}
+
+export interface CharacterNetworkLink {
+  source: number | CharacterNetworkNode;
+  target: number | CharacterNetworkNode;
+  sharedEpisodes: number;
+  sharedEpisodeIds: number[];
+}

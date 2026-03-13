@@ -7,10 +7,14 @@ import {
   ResponsiveContainer,
   Cell,
 } from "recharts";
-import type { Location } from "../../types";
+
+interface OriginCountDatum {
+  name: string;
+  residents: number;
+}
 
 interface Props {
-  locations: Location[];
+  data: OriginCountDatum[];
 }
 
 function CustomTooltip({
@@ -32,27 +36,28 @@ function CustomTooltip({
   );
 }
 
-export default function OriginBarChart({ locations }: Props) {
-  const data = locations
-    .map((l) => ({ name: l.name, residents: l.residents.length }))
+export default function OriginBarChart({ data }: Props) {
+  const sorted = data
+    .slice()
     .sort((a, b) => b.residents - a.residents)
     .slice(0, 20);
 
-  const maxVal = data[0]?.residents ?? 1;
+  const maxVal = sorted[0]?.residents ?? 1;
+  const chartHeight = Math.max(480, sorted.length * 30 + 40);
 
   return (
     <div>
       <h2 className="text-xl font-semibold mb-1 text-slate-100">
-        Top 20 Locations by Residents
+        Top 20 Origins by Residents
       </h2>
       <p className="text-sm mb-6 mt-0 text-slate-500">
-        How many characters originate from each location.
+        Counts reflect the current origin, species, and status filters.
       </p>
-      <ResponsiveContainer width="100%" height={480}>
+      <ResponsiveContainer width="100%" height={chartHeight}>
         <BarChart
-          data={data}
+          data={sorted}
           layout="vertical"
-          margin={{ left: 0, right: 30, top: 0, bottom: 0 }}
+          margin={{ left: 8, right: 30, top: 0, bottom: 0 }}
         >
           <XAxis
             type="number"
@@ -64,7 +69,9 @@ export default function OriginBarChart({ locations }: Props) {
           <YAxis
             type="category"
             dataKey="name"
-            width={160}
+            width={210}
+            interval={0}
+            tickMargin={8}
             tick={{ fill: "#94a3b8", fontSize: 12 }}
             axisLine={false}
             tickLine={false}
@@ -73,9 +80,9 @@ export default function OriginBarChart({ locations }: Props) {
             content={<CustomTooltip />}
             cursor={{ fill: "rgba(151,206,76,0.07)" }}
           />
-          <Bar dataKey="residents" radius={[0, 4, 4, 0]}>
-            {data.map((_, index) => {
-              const ratio = 1 - index / data.length;
+          <Bar dataKey="residents" radius={[0, 4, 4, 0]} barSize={16}>
+            {sorted.map((_, index) => {
+              const ratio = 1 - index / sorted.length;
               const r = Math.round(151 * ratio + 42 * (1 - ratio));
               const g = Math.round(206 * ratio + 48 * (1 - ratio));
               const b = Math.round(76 * ratio + 100 * (1 - ratio));

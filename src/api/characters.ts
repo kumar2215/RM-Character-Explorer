@@ -29,3 +29,25 @@ export async function fetchCharacterById(id: number): Promise<Character> {
   if (!res.ok) throw new Error(`Character ${id} not found`);
   return res.json();
 }
+
+export async function fetchAllCharacters(): Promise<Character[]> {
+  const first = await fetch(`${BASE}/character`);
+  if (!first.ok) {
+    if (first.status === 404) return [];
+    throw new Error(`Failed to fetch characters: ${first.status}`);
+  }
+
+  const firstData: ApiResponse<Character> = await first.json();
+  const totalPages = firstData.info.pages;
+  const remaining = Array.from({ length: totalPages - 1 }, (_, i) =>
+    fetch(`${BASE}/character?page=${i + 2}`).then((res) => {
+      if (!res.ok) {
+        throw new Error(`Failed to fetch characters page ${i + 2}`);
+      }
+      return res.json() as Promise<ApiResponse<Character>>;
+    }),
+  );
+
+  const rest = await Promise.all(remaining);
+  return [firstData, ...rest].flatMap((d) => d.results);
+}
