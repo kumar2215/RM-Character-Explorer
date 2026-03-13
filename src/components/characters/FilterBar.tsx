@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { CharacterFilters } from "../../types";
 
 interface Props {
@@ -12,17 +12,18 @@ const labelCls = "block text-xs text-slate-400 mb-1";
 
 export default function FilterBar({ filters, onChange }: Props) {
   const [nameInput, setNameInput] = useState(filters.name);
+  const isFirstRender = useRef(true);
 
   // Debounce name input
   useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+
     const t = setTimeout(() => onChange({ name: nameInput, page: 1 }), 400);
     return () => clearTimeout(t);
-  }, [nameInput]);
-
-  // Sync if filters reset externally
-  useEffect(() => {
-    setNameInput(filters.name);
-  }, [filters.name]);
+  }, [nameInput, onChange]);
 
   return (
     <div className="bg-surface border border-rim rounded-xl p-4 grid gap-3 grid-cols-[repeat(auto-fill,minmax(160px,1fr))] mb-6">
