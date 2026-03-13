@@ -1,4 +1,4 @@
-interface Props {
+interface PaginationProps {
   page: number;
   totalPages: number;
   onPageChange: (page: number) => void;
@@ -7,7 +7,11 @@ interface Props {
 const btnCls =
   "bg-card border border-rim rounded-lg text-slate-200 text-sm px-4 py-2 cursor-pointer transition-colors hover:border-portal disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-rim";
 
-export default function Pagination({ page, totalPages, onPageChange }: Props) {
+export default function Pagination({
+  page,
+  totalPages,
+  onPageChange,
+}: PaginationProps) {
   if (totalPages <= 1) return null;
 
   return (

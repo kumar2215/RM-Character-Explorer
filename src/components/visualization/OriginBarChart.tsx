@@ -13,7 +13,7 @@ interface OriginCountDatum {
   residents: number;
 }
 
-interface Props {
+interface OriginBarChartProps {
   data: OriginCountDatum[];
 }
 
@@ -36,7 +36,7 @@ function CustomTooltip({
   );
 }
 
-export default function OriginBarChart({ data }: Props) {
+export default function OriginBarChart({ data }: OriginBarChartProps) {
   const sorted = data
     .slice()
     .sort((a, b) => b.residents - a.residents)

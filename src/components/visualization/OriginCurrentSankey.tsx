@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { ResponsiveContainer, Sankey, Tooltip } from "recharts";
 import type { OriginCurrentSankeyData } from "../../types";
 
-interface Props {
+interface OriginCurrentSankeyProps {
   data: OriginCurrentSankeyData;
 }
 
@@ -109,7 +109,9 @@ function SankeyTooltip({ active, payload, mode }: TooltipProps) {
   );
 }
 
-export default function OriginCurrentSankey({ data }: Props) {
+export default function OriginCurrentSankey({
+  data,
+}: OriginCurrentSankeyProps) {
   const [mode, setMode] = useState<DisplayMode>("count");
 
   const displayData = useMemo(() => {

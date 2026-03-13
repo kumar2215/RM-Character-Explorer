@@ -1,73 +1,105 @@
-# React + TypeScript + Vite
+# Rick and Morty Explorer
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A React and TypeScript application for exploring Rick and Morty characters and visualizing relationships across origins, locations, and shared episodes.
 
-Currently, two official plugins are available:
+External API documentation: https://rickandmortyapi.com/documentation
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Overview
 
-## React Compiler
+### Approach
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+The application is built as a client-side explorer with two primary flows:
 
-## Expanding the ESLint configuration
+1. Character browsing with filter and pagination support.
+2. Data visualization views for character origins, current locations, and network relationships.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+The data layer calls the Rick and Morty REST API and normalizes responses into typed models used throughout the UI.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### Architecture
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+The project follows a feature-oriented structure with clear boundaries between API access, view components, pages, shared types, and visualization utilities.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+High-level modules:
+
+- src/api: API clients for character and location retrieval.
+- src/components: Reusable UI modules grouped by domain (characters, visualization, layout).
+- src/pages: Route-level page components.
+- src/utils: Data transformation logic for visualization graphs and charts.
+- src/types: Shared TypeScript models and filter contracts.
+- src/test: Unit and component tests grouped by domain.
+
+Routing:
+
+- / - Character Explorer page.
+- /character/:id - Character details page.
+- /visualization - Visualization dashboard.
+
+## Setup Instructions
+
+### Prerequisites
+
+- Node.js 20+ recommended.
+- npm 10+ recommended.
+
+### Install dependencies
+
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Run the app (development)
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run dev
 ```
+
+The Vite development server starts locally and supports hot reload.
+
+### Production build and preview
+
+```bash
+npm run build
+npm run preview
+```
+
+## Testing Instructions
+
+Run all tests:
+
+```bash
+npm run test
+```
+
+Run tests in watch mode:
+
+```bash
+npm run test:watch
+```
+
+Run tests with coverage:
+
+```bash
+npm run test:coverage
+```
+
+Optional quality check:
+
+```bash
+npm run lint
+```
+
+## Assumptions / Challenges
+
+### Design decisions
+
+- React Query is used to manage API request state, caching, and loading/error handling.
+- D3 and Recharts are used for complementary visualization needs.
+- Shared TypeScript interfaces are centralized to keep API contracts and UI state consistent.
+- Utility functions in src/utils encapsulate graph and Sankey data transformations to keep page components focused on composition.
+
+### Assumptions
+
+- The application depends on public Rick and Morty API availability and response stability.
+- The visualization views are expected to be used with practical dataset sizes, so node limits and episode thresholds are applied to keep rendering responsive.
+- The Rick and Morty API schema is assumed to stay compatible with the typed models used in this project.
+- No custom backend proxy is assumed. All data fetching is performed directly from the client.

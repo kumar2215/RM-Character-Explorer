@@ -1,18 +1,7 @@
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { fetchCharacterById } from "../api/characters";
-
-const STATUS_DOT: Record<string, string> = {
-  Alive: "bg-portal",
-  Dead: "bg-dead",
-  unknown: "bg-slate-400",
-};
-
-const STATUS_TEXT: Record<string, string> = {
-  Alive: "text-portal",
-  Dead: "text-dead",
-  unknown: "text-slate-400",
-};
+import { fetchCharacterById } from "../api";
+import { STATUS_DOT_CLASS, STATUS_TEXT_CLASS } from "../constants";
 
 function extractEpisodeCode(url: string) {
   const id = url.split("/").pop();
@@ -68,7 +57,7 @@ export default function CharacterPage() {
     {
       label: "Status",
       value: character.status,
-      textClass: STATUS_TEXT[character.status] ?? "text-slate-200",
+      textClass: STATUS_TEXT_CLASS[character.status] ?? "text-slate-200",
     },
     {
       label: "Species",
@@ -115,7 +104,7 @@ export default function CharacterPage() {
         <div className="flex-1 p-8 min-w-60">
           <div className="flex items-center gap-3 mb-6">
             <span
-              className={`w-3 h-3 rounded-full shrink-0 ${STATUS_DOT[character.status] ?? "bg-slate-400"}`}
+              className={`w-3 h-3 rounded-full shrink-0 ${STATUS_DOT_CLASS[character.status] ?? "bg-slate-400"}`}
             />
             <h1 className="text-3xl font-bold m-0 text-slate-100">
               {character.name}

@@ -1,10 +1,8 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { fetchCharacters } from "../api/characters";
+import { fetchCharacters } from "../api";
 import type { CharacterFilters } from "../types";
-import FilterBar from "../components/characters/FilterBar";
-import CharacterGrid from "../components/characters/CharacterGrid";
-import Pagination from "../components/characters/Pagination";
+import { CharacterGrid, FilterBar, Pagination } from "../components/characters";
 
 const DEFAULT_FILTERS: CharacterFilters = {
   name: "",

@@ -1,23 +1,12 @@
 import { Link } from "react-router-dom";
 import type { Character } from "../../types";
+import { STATUS_DOT_CLASS, STATUS_TEXT_CLASS } from "../../constants";
 
-const STATUS_DOT: Record<Character["status"], string> = {
-  Alive: "bg-portal",
-  Dead: "bg-dead",
-  unknown: "bg-slate-400",
-};
-
-const STATUS_TEXT: Record<Character["status"], string> = {
-  Alive: "text-portal",
-  Dead: "text-dead",
-  unknown: "text-slate-400",
-};
-
-interface Props {
+interface CharacterCardProps {
   character: Character;
 }
 
-export default function CharacterCard({ character }: Props) {
+export default function CharacterCard({ character }: CharacterCardProps) {
   return (
     <Link
       to={`/character/${character.id}`}
@@ -35,9 +24,9 @@ export default function CharacterCard({ character }: Props) {
         </h3>
         <div className="flex items-center gap-1.5 text-sm">
           <span
-            className={`w-2 h-2 rounded-full shrink-0 ${STATUS_DOT[character.status]}`}
+            className={`w-2 h-2 rounded-full shrink-0 ${STATUS_DOT_CLASS[character.status]}`}
           />
-          <span className={STATUS_TEXT[character.status]}>
+          <span className={STATUS_TEXT_CLASS[character.status]}>
             {character.status}
           </span>
           <span className="text-slate-500">—</span>

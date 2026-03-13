@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 import type { Location } from "../../types";
 
-interface Props {
+interface DimensionNetworkProps {
   locations: Location[];
 }
 
@@ -36,7 +36,7 @@ function strColor(s: string): string {
   return `hsl(${hue},60%,55%)`;
 }
 
-export default function DimensionNetwork({ locations }: Props) {
+export default function DimensionNetwork({ locations }: DimensionNetworkProps) {
   const svgRef = useRef<SVGSVGElement>(null);
   const [tooltip, setTooltip] = useState<TooltipState | null>(null);
 

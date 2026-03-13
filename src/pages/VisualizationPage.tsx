@@ -1,17 +1,19 @@
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { fetchAllCharacters } from "../api/characters";
-import OriginBarChart from "../components/visualization/OriginBarChart";
-import OriginCurrentSankey from "../components/visualization/OriginCurrentSankey";
-import CharacterEpisodeNetwork from "../components/visualization/CharacterEpisodeNetwork";
-import CharacterNetworkControls from "../components/visualization/CharacterNetworkControls";
+import { fetchAllCharacters } from "../api";
+import {
+  CharacterEpisodeNetwork,
+  CharacterNetworkControls,
+  OriginBarChart,
+  OriginCurrentSankey,
+} from "../components/visualization";
 import type { CharacterNetworkFilters } from "../types";
 import {
   buildCharacterNetworkData,
   buildOriginCurrentSankeyData,
   deriveCharacterNetworkFilterOptions,
   filterCharactersForNetwork,
-} from "../utils/characterNetwork";
+} from "../utils";
 
 const DEFAULT_NETWORK_FILTERS: CharacterNetworkFilters = {
   origins: [],

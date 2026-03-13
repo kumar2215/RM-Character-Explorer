@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { CharacterFilters } from "../../types";
 
-interface Props {
+interface FilterBarProps {
   filters: CharacterFilters;
   onChange: (f: Partial<CharacterFilters>) => void;
 }
@@ -10,7 +10,7 @@ const fieldCls =
   "w-full bg-card border border-rim rounded-lg text-slate-200 text-sm px-3 py-2 outline-none focus:border-portal transition-colors";
 const labelCls = "block text-xs text-slate-400 mb-1";
 
-export default function FilterBar({ filters, onChange }: Props) {
+export default function FilterBar({ filters, onChange }: FilterBarProps) {
   const [nameInput, setNameInput] = useState(filters.name);
   const isFirstRender = useRef(true);
 

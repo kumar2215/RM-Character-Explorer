@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import * as d3 from "d3";
 import type { CharacterNetworkLink, CharacterNetworkNode } from "../../types";
 
-interface Props {
+interface CharacterEpisodeNetworkProps {
   nodes: CharacterNetworkNode[];
   links: CharacterNetworkLink[];
 }
@@ -26,7 +26,10 @@ function nodeRadius(d: SimNode): number {
   return Math.max(10, Math.min(14, 10 + Math.log2(d.episodeCount + 1)));
 }
 
-export default function CharacterEpisodeNetwork({ nodes, links }: Props) {
+export default function CharacterEpisodeNetwork({
+  nodes,
+  links,
+}: CharacterEpisodeNetworkProps) {
   const svgRef = useRef<SVGSVGElement>(null);
   const navigate = useNavigate();
   const [isRendering, setIsRendering] = useState(true);

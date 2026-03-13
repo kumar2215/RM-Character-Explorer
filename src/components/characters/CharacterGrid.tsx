@@ -1,11 +1,11 @@
 import type { Character } from "../../types";
 import CharacterCard from "./CharacterCard";
 
-interface Props {
+interface CharacterGridProps {
   characters: Character[];
 }
 
-export default function CharacterGrid({ characters }: Props) {
+export default function CharacterGrid({ characters }: CharacterGridProps) {
   if (characters.length === 0) {
     return (
       <div className="text-center py-20 text-slate-500">

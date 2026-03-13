@@ -3,7 +3,7 @@ import type {
   CharacterNetworkFilters,
 } from "../../types";
 
-interface Props {
+interface CharacterNetworkControlsProps {
   filters: CharacterNetworkFilters;
   options: CharacterNetworkFilterOptions;
   onChange: (next: Partial<CharacterNetworkFilters>) => void;
@@ -89,7 +89,7 @@ export default function CharacterNetworkControls({
   options,
   onChange,
   showGraphControls = true,
-}: Props) {
+}: CharacterNetworkControlsProps) {
   return (
     <div className="bg-surface border border-rim rounded-xl p-4 mb-5 space-y-4">
       {showGraphControls && (
